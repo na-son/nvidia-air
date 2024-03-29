@@ -1,0 +1,32 @@
+nv set system hostname leaf-0b
+nv set interface lo ip address 10.10.10.11/32
+
+# Switchports
+nv set interface swp1-4,13-16
+
+# Bonds
+nv set interface bond1 bond member swp1
+nv set interface bond1 bond mlag id 1
+
+nv set interface bond2 bond member swp2
+nv set interface bond2 bond mlag id 2
+
+# Upstream
+nv set interface bond20 bond member swp13-14
+nv set interface bond20 bond mlag id 20
+
+# Bridge
+nv set bridge domain br_default vlan 10,20,30
+nv set bridge domain br_default stp priority 8192
+nv set interface bond1-2,20 bridge domain br_default 
+
+# Peerlink
+nv set interface peerlink bond member swp15-16
+nv set system global anycast-mac 44:1E:AF:BE:EF:00
+
+# this will change to the OOB mgmt ip
+nv set mlag backup $(host leaf-0-a | cut -d ' ' -f 4) vrf mgmt
+nv set mlag peer-ip linklocal
+nv set mlag init-delay 100
+
+nv config apply
