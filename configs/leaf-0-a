@@ -1,4 +1,4 @@
-nv set system hostname leaf-0a
+nv set system hostname leaf-0-a
 nv set interface lo ip address 10.10.10.10/32
 
 # Switchports
