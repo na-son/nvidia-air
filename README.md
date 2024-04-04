@@ -4,8 +4,6 @@ here be dragons
 
 ## Setup
 
-
-
 ### Python
 
 Using python 3.9
@@ -21,3 +19,7 @@ export AIR_TOKEN='' #generate an air token
 ### Direnv (optional)
 
 To use direnv, edit `.envrc` and add your email and token then `direnv allow`
+
+## Usage
+
+Run `python main.py` and run the ssh command provided. The air default password is `nvidia`

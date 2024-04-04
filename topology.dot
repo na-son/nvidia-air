@@ -1,4 +1,4 @@
-graph "testing" {
+graph "main" {
   "spine-a" [ function="spine" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
   "spine-b" [ function="spine" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
   "leaf-0-a" [ function="leaf" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
