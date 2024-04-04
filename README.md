@@ -22,4 +22,10 @@ To use direnv, edit `.envrc` and add your email and token then `direnv allow`
 
 ## Usage
 
-Run `python main.py` and run the ssh command provided. The air default password is `nvidia`
+Run `python main.py` and run the ssh command provided. The air default user:password is `ubuntu:nvidia`
+
+A host, `nix` is provided for emulating a server. You can ssh to it from the oob server.
+
+### Topology generation
+
+Go to https://air.nvidia.com/build 

@@ -7,12 +7,13 @@ graph "main" {
   "leaf-1-b" [ function="leaf" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
   "leaf-2-a" [ function="leaf" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
   "leaf-2-b" [ function="leaf" memory="2048" os="cumulus-vx-5.8.0" cpu="1"]
+  "nix" [ memory="4096" os="generic/ubuntu2204" cpu="4"]
   "compute-0-0" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
   "compute-0-1" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
   "compute-1-0" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
   "compute-1-1" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
-  "ubuntu0" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
-  "ubuntu1" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
+  "compute-2-0" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
+  "compute-2-1" [ memory="1024" os="generic/ubuntu2204" cpu="1"]
   "netq-ts" [ os="netq-ts-cloud-4.5.0" ]
     "leaf-0-a":"swp16" -- "leaf-0-b":"swp16"
     "leaf-0-b":"swp15" -- "leaf-0-a":"swp15"
@@ -42,10 +43,12 @@ graph "main" {
     "compute-1-0":"eth1" -- "leaf-1-a":"swp1"
     "compute-1-0":"eth2" -- "leaf-1-b":"swp1"
     "compute-1-1":"eth2" -- "leaf-1-b":"swp2"
-    "ubuntu0":"eth1" -- "leaf-2-a":"swp1"
-    "leaf-2-a":"swp2" -- "ubuntu1":"eth1"
-    "ubuntu0":"eth2" -- "leaf-2-b":"swp1"
-    "ubuntu1":"eth2" -- "leaf-2-b":"swp2"
+    "compute-2-0":"eth1" -- "leaf-2-a":"swp1"
+    "leaf-2-a":"swp2" -- "compute-2-1":"eth1"
+    "compute-2-0":"eth2" -- "leaf-2-b":"swp1"
+    "compute-2-1":"eth2" -- "leaf-2-b":"swp2"
+    "nix":"eth1" -- "spine-a":"swp30"
+    "nix":"eth2" -- "spine-b":"swp30"
 
   # Internal Air connectivity for uncabled ports
   "air-internal" [function="fake"]
@@ -72,7 +75,6 @@ graph "main" {
     "spine-a":"swp27" -- "air-internal":"eth21"
     "spine-a":"swp28" -- "air-internal":"eth22"
     "spine-a":"swp29" -- "air-internal":"eth23"
-    "spine-a":"swp30" -- "air-internal":"eth24"
     "spine-b":"swp7" -- "air-internal":"eth25"
     "spine-b":"swp8" -- "air-internal":"eth26"
     "spine-b":"swp9" -- "air-internal":"eth27"
@@ -96,7 +98,6 @@ graph "main" {
     "spine-b":"swp27" -- "air-internal":"eth45"
     "spine-b":"swp28" -- "air-internal":"eth46"
     "spine-b":"swp29" -- "air-internal":"eth47"
-    "spine-b":"swp30" -- "air-internal":"eth48"
     "leaf-0-a":"swp3" -- "air-internal":"eth49"
     "leaf-0-a":"swp4" -- "air-internal":"eth50"
     "leaf-0-a":"swp5" -- "air-internal":"eth51"
