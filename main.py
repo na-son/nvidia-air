@@ -22,7 +22,7 @@ for node in nodes:
 
 key = 'curl https://github.com/na-son.keys | tee /root/.ssh/authorized_keys; chage -d 1 ubuntu'
 
-infect = 'curl https://raw.githubusercontent.com/elitak/nixos-infect/master/nixos-infect | NIX_CHANNEL=nixos-23.11 sudo bash -x'
+infect = 'curl https://raw.githubusercontent.com/elitak/nixos-infect/master/nixos-infect | NIX_CHANNEL=nixos-23.11 NIXOS_CONFIG="https://raw.githubusercontent.com/na-son/nvidia-air/main/configuration.nix" sudo bash -x'
 nix.create_instructions(data=key, executor='shell')
 nix.create_instructions(data=infect, executor='shell')
 
