@@ -26,7 +26,7 @@ sim = air.simulations.create(topology_data=topology)
 oob_mgmt_server = air.simulation_nodes.list(simulation=sim, name='oob-mgmt-server')[0]
 #ztp_contents = '<ztp_script_content_here>'
 key = 'curl https://github.com/na-son.keys >> /home/ubuntu/.ssh/authorized_keys; chage -d 1 ubuntu'
-clone = 'su - ubuntu; git clone https://github.com/na-son/nvidia-air.git'
+clone = 'git clone https://github.com/na-son/nvidia-air.git /home/ubuntu/nvidia-air'
 #data = {'/var/www/html/cumulus-ztp': ztp_contents}
 #oob_mgmt_server.create_instructions(data=json.dumps(data), executor='file')
 oob_mgmt_server.create_instructions(data=key, executor='shell')
