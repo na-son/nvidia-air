@@ -1,42 +1,73 @@
 import os
+import json
+import typing
 import air_sdk
 
-EMAIL = os.environ["AIR_EMAIL"]
-TOKEN = os.environ["AIR_TOKEN"]
+def copy_run(node: type[air_sdk.simulation_node.SimulationNode], src_filename: str, target_filename: str, post_cmd: list[str]):
+    """
+    Copies a file to the specified node, and runs each command in post_cmd as root using file_instruction()
+    """
+    data = {}
 
-air = air_sdk.AirApi(username=EMAIL, password=TOKEN)
+    fd = open(src_filename, "r")
+    if fd.mode == 'r':
+        file_str = fd.read()
 
-topology = "./topology.dot"
+    data[target_filename] = file_str
+    data["post_cmd"] = post_cmd
 
-# create sim with topology
-sim = air.simulations.create(topology_data=topology)
+    if AIR_DEBUG == True:
+        print(f'{src_filename} instruction data is:')
+        print(data)
 
-# simulation node startup stuff 
+    file_instruction(node, data)
 
+def file_instruction(node: type[air_sdk.simulation_node.SimulationNode], data: str):
+    """
+    Creates instructions for a node given a file
+    """
+    try:
+        node.create_instructions(data=json.dumps(data), executor='file')
+        print(f'created instruction for: {node.name}')
+    except:
+        print(f'Error while creating instruction for: {node}')
+        raise
 
-nodes = air.simulation_nodes.list(simulation=sim)
-for node in nodes:
-   if 'nix' == node.name:
-       nix = node
+def create_service(host: str, port: int, interface: str):
+    """
+    Creates a NAT to expose a given port on the oob-mgmt-server node, prints SSH instructions (works for root or ubuntu)
+    """
+    service = air.services.create(name=f'{host}-{port}', interface=f'{host}:{interface}', simulation=sim, dest_port=port)
+    print(f'ssh -p {service.src_port} root@{service.host}')
 
+def find_node(name: str) -> type[air_sdk.simulation_node.SimulationNode]:
+    """
+    Finds a node in the topology, and returns the first matching node. Don't have duplicate names in the topology!
+    """
 
-key = 'curl https://github.com/na-son.keys | tee /root/.ssh/authorized_keys; chage -d 1 ubuntu'
+    node = air.simulation_nodes.list(simulation=sim, name=name)[0]
+    return node
 
-infect = 'curl https://raw.githubusercontent.com/elitak/nixos-infect/master/nixos-infect | NIX_CHANNEL=nixos-23.11 NIXOS_CONFIG="https://raw.githubusercontent.com/na-son/nvidia-air/main/configuration.nix" sudo bash -x'
-nix.create_instructions(data=key, executor='shell')
-nix.create_instructions(data=infect, executor='shell')
+if __name__ == '__main__':
+    EMAIL: str = os.environ["AIR_EMAIL"]
+    TOKEN: str = os.environ["AIR_TOKEN"]
+    AIR_DEBUG: bool = False
+    
+    air = air_sdk.AirApi(username=EMAIL, password=TOKEN)
+    
+    topology = "./topology.dot"
+    
+    # create simulation with topology from dotfile
+    sim = air.simulations.create(topology_data=topology)
+    
+    # nix init
+    nix = find_node('nix') 
+    copy_run(nix, "hardware/nix-init.sh", "/home/ubuntu/nix-init.sh", ["bash /home/ubuntu/nix-init.sh"])
+    
+    # linux init script and ZTP
+    oob = find_node('oob-mgmt-server')
+    copy_run(oob, "hardware/linux-init.sh", "/home/ubuntu/linux-init.sh", ["bash /home/ubuntu/linux-init.sh"])
+    copy_run(oob, "hardware/cumulus-ztp", "/var/www/html/cumulus-ztp", ["chmod 755 /var/www/html/cumulus-ztp"])
 
-oob_mgmt_server = air.simulation_nodes.list(simulation=sim, name='oob-mgmt-server')[0]
-clone = 'git clone https://github.com/na-son/nvidia-air.git /home/ubuntu/nvidia-air'
-oob_mgmt_server.create_instructions(data=key, executor='shell')
-oob_mgmt_server.create_instructions(data=clone, executor='shell')
-
-# get NAT for external SSH
-service_name = 'oob-mgmt-server SSH'
-interface = 'oob-mgmt-server:eth0'
-dest_port = 22
-service = air.services.create(name=service_name, interface=interface, simulation=sim, dest_port=dest_port)
-#print(f'ssh -p {service.src_port} {service.os_default_username}@{service.host}')
-print(f'ssh -p {service.src_port} root@{service.host}')
-print(f'ssh -J root@{service.host}:{service.src_port} root@nix')
-
+    create_service(oob.name, 22, 'eth0')
+    

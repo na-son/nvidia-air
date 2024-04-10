@@ -13,7 +13,7 @@ python -m venv venv
 . venv/bin/activate
 python -m pip install air-sdk
 export AIR_USER='' #change to air email
-export AIR_TOKEN='' #generate an air token
+export AIR_EMAIL='' #generate an air token
 ```
 
 ### Direnv (optional)
@@ -26,6 +26,12 @@ Run `python main.py` and run the ssh command provided. The air default user:pass
 
 A host, `nix` is provided for emulating a server. You can ssh to it from the oob server.
 
+The oob node has entries in `/etc/hosts` for each node in the topology.
+
 ### Topology generation
 
 Go to https://air.nvidia.com/build 
+
+## Further reading
+
+https://gitlab.com/cumulus-consulting/goldenturtle/cldemo2-air-builder/
